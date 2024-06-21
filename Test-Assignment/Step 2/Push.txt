@@ -1,0 +1,10 @@
+# Build the Docker image
+docker build -t username/app-name:latest .
+
+# Log in to Docker Hub
+docker login
+
+# Push the Docker image to Docker Hub  คือเอาไฟล์ไปไว้ที่ Docker Hub
+docker push username/app-name:latest
+
+

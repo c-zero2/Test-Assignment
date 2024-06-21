@@ -1,0 +1,41 @@
+provider "google" {
+  project = var.project_id
+  region  = var.region
+}
+
+resource "google_compute_network" "vpc_network" {
+  name = "vpc-network"
+}
+
+resource "google_compute_subnetwork" "subnetwork" {
+  name          = "subnetwork"
+  ip_cidr_range = "10.0.0.0/16"
+  region        = var.region
+  network       = google_compute_network.vpc_network.name
+}
+
+resource "google_container_cluster" "primary" {
+  name     = "gke-cluster"
+  location = var.region
+
+  networking {
+    network    = google_compute_network.vpc_network.name
+    subnetwork = google_compute_subnetwork.subnetwork.name
+  }
+
+  node_config {
+    machine_type = "e2-medium"
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform",
+    ]
+  }
+
+  node_pool {
+    name       = "default-pool"
+    node_count = 3
+
+    node_config {
+      machine_type = "e2-medium"
+    }
+  }
+}
